@@ -44,15 +44,43 @@ class Application extends CI_Controller {
 	}
 
 	// build menu choices depending on the user role
-	function makemenu()
-	{
-		$choices = array();
+	function makemenu() {
+            $userRole = $this->session->userdata('userRole');
+            $choices = array();
+            $choices[] = array('name' => "Alpha", 'link' => '/alpha');
+            if ($userRole == ROLE_ADMIN) {
+                $choices[] = array('name' => "Beta", 'link' => '/beta');
+                $choices[] = array('name' => "Gamma", 'link' => '/gamma');
+                $choices[] = array('name' => "Logout", 'link' => '/auth/logout');
+            } else if ($userRole == ROLE_USER) {
+                $choices[] = array('name' => "Beta", 'link' => '/beta');
+                $choices[] = array('name' => "Logout", 'link' => '/auth/logout');
+            } else {
+                $choices[] = array('name' => "Login", 'link' => '/auth');
+            }
+            return $choices;
+        }
 
-		$choices[] = array('name' => "Alpha", 'link' => '/alpha');
-		$choices[] = array('name' => "Beta", 'link' => '/beta');
-		$choices[] = array('name' => "Gamma", 'link' => '/gamma');
-		return $choices;
-	}
+    function restrict($roleNeeded = null) 
+        {
+            $userRole = $this->session->userdata('userRole');
+            if ($roleNeeded != null) 
+                {
+                    if (is_array($roleNeeded)) 
+                    {
+                        if (!in_array($userRole, $roleNeeded)) 
+                        {
+                            redirect("/");
+                            return;
+                        }
+                    } 
+                    else if ($userRole != $roleNeeded) 
+                    {
+                        redirect("/");
+                        return;
+                     }
+                }
+         }
 
 }
 
